@@ -1,0 +1,573 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function nemac_mailing_list_install() {
+  node_types_rebuild();
+
+  foreach (_nemac_mailing_list_field_specs() as $field_spec) {
+error_log('creating field');
+    field_create_field($field_spec['field_config']);
+    $instance                = $field_spec['field_instance'];
+    $instance['entity_type'] = 'node';
+    $instance['bundle']      = 'nemac_mailing_list';
+    field_create_instance($instance);
+  }
+
+}
+
+/*
+ * Return an array of "Field Spec" arrays, one for each field to be defined for the 'NEMAC Mailing List'
+ * content type.  Each Field Spec array has exactly two keys:
+ *    'field_config':   a field definition array, as expected by field_create_field()
+ *    'field_instance': a field instance definition array, as expected by field_create_instance()
+ * Note: the Field Spec array concept is just a convenience used within this module's code; it is
+ * not part of Drupal's Field API  The field definition array, and field instance definition array,
+ * however, are part of the Field API.
+ */
+function _nemac_mailing_list_field_specs() {
+
+  $field_specs = array();
+
+  $field_specs[] = array(
+    'field_config' => array(
+      'active'        => '1',
+      'cardinality'   => '-1',
+      'deleted'       => '0',
+      'entity_types'  => array(),
+      'field_name'    => 'field_nemac_mailing_list_roles',
+      'foreign keys'  => array(),
+      'indexes'       => array(),
+      'module'        => 'role_field',
+      'settings'      => array(
+        'exclusive'     => 1,
+        'roles'         => array(
+            //3             => '3',
+        ),
+      ),
+      'translatable'  => '0',
+      'type'          => 'role',
+    ),
+    'field_instance' => array(
+      'bundle'        => 'nemac_mailing_list',
+      'default_value' => NULL,
+      'deleted'       => '0',
+      'description'   => 'Check any roles that should be included in this mailing list.  Checking a role will cause all users in that role to belong to the list.',
+      'display'       => array(
+        'default'       => array(
+          'label'       => 'above',
+          'module'      => 'role_field',
+          'settings'    => array(),
+          'type'        => 'role_field_formatter',
+          'weight'      => 1,
+        ),
+        'teaser'     => array(
+          'label'      => 'above',
+          'settings'   => array(),
+          'type'       => 'hidden',
+          'weight'     => 0,
+        ),
+      ),
+      'entity_type'    => 'node',
+      'field_name'     => 'field_nemac_mailing_list_roles',
+      'label'          => 'Roles',
+      'required'       => 0,
+      'settings'       => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget'         => array(
+        'active'         => 1,
+        'module'         => 'options',
+        'settings'       => array(),
+        'type'           => 'options_buttons',
+        'weight'         => '1',
+      ),
+    ),
+  );
+
+  $field_specs[] = array(
+    'field_config'      => array(
+      'active'            => '1',
+      'cardinality'       => '-1',
+      'deleted'           => '0',
+      'entity_types'      => array(),
+      'field_name'        => 'nemac_mailing_list_users',
+      'foreign keys'      => array(
+        'node'            => array(
+          'columns'       => array(
+            'target_id'   => 'nid',
+          ),
+          'table'         => 'node',
+        ),
+      ),
+      'indexes'           => array(
+        'target_id'         => array(
+          0                   => 'target_id',
+        ),
+      ),
+      'module'            => 'entityreference',
+      'settings'            => array(
+        'handler'             => 'base',
+        'handler_settings'    => array(
+          'sort'                => array(
+            'direction'           => 'ASC',
+            'field'               => 'none',
+            'property'            => 'uid',
+            'type'                => 'none',
+          ),
+          'target_bundles'      => array(),
+        ),
+        'handler_submit'      => 'Change handler',
+        'target_type'         => 'user',
+      ),
+      'translatable'        => '0',
+      'type'                => 'entityreference',
+    ),
+    'field_instance'    => array(
+      'bundle'            => 'nemac_mailing_list',
+      'default_value'     => NULL,
+      'deleted'           => '0',
+      'description'       => 'Enter any individual user who should belong to this list, regardless of whatever roles are checked above.',
+      'display'           => array(
+        'default'           => array(
+          'label'             => 'above',
+          'module'            => 'entityreference',
+          'settings'          => array(
+            'link'            => FALSE,
+          ),
+          'type'            => 'entityreference_label',
+          'weight'          => 1,
+        ),
+        'teaser'            => array(
+          'label'             => 'above',
+          'settings'          => array(),
+          'type'              => 'hidden',
+          'weight'            => 1,
+        ),
+      ),
+      'entity_type'         => 'node',
+      'field_name'          => 'nemac_mailing_list_users',
+      'label'               => 'Users',
+      'required'            => 0,
+      'settings'            => array(
+        'user_register_form'  => FALSE,
+      ),
+      'widget'              => array(
+        'active'              => 1,
+        'module'              => 'entityreference',
+        'settings'            => array(
+          'match_operator'      => 'CONTAINS',
+          'path'                => '',
+          'size'                => '60',
+        ),
+        'type'                => 'entityreference_autocomplete',
+        'weight'              => '2',
+      ),
+    ),
+  );
+
+  $field_specs[] = array(
+    'field_config' => array(
+      'active'       => '1',
+      'cardinality'  => '1',
+      'deleted'      => '0',
+      'entity_types' => array(),
+      'field_name'   => 'nemac_mailing_list_addresses',
+      'foreign keys' => array(
+        'format'       => array(
+          'columns'      => array(
+            'format'       => 'format',
+          ),
+          'table'        => 'filter_format',
+        ),
+      ),
+      'indexes'        => array(
+        'format'         => array(
+          0                => 'format',
+        ),
+      ),
+      'module'         => 'text',
+      'settings'       => array(),
+      'translatable'   => '0',
+      'type'           => 'text_long',
+    ),
+    'field_instance' => array(
+      'bundle'         => 'nemac_mailing_list',
+      'default_value'  => NULL,
+      'deleted'        => '0',
+      'description'    => 'Enter additional email addresses for this mailing list here.  Enter one email address per line.  These should be email addresses, not Drupal user accounts.',
+      'display'        => array(
+        'default'        => array(
+          'label'          => 'above',
+          'module'         => 'text',
+          'settings'       => array(),
+          'type'           => 'text_default',
+          'weight'         => 2,
+        ),
+        'teaser'         => array(
+          'label'          => 'above',
+          'settings'       => array(),
+          'type'           => 'hidden',
+          'weight'         => 0,
+        ),
+      ),
+      'entity_type'      => 'node',
+      'field_name'       => 'nemac_mailing_list_addresses',
+      'label'            => 'Additional Addresses',
+      'required'         => 0,
+      'settings'         => array(
+        'text_processing'    => '0',
+        'user_register_form' => FALSE,
+      ),
+      'widget'           => array(
+        'active'           => 1,
+        'module'           => 'text',
+        'settings'         => array(
+          'rows'           => '5',
+        ),
+        'type'           => 'text_textarea',
+        'weight'         => '3',
+      ),
+    ),
+  );
+
+
+
+//  $field_specs[] = _nemac_mailing_list_textarea_field_spec(array(
+//    'field_name'            => 'field_nemac_mailing_list_description',
+//    'label'                 => 'Description',
+//    'description'           => 'Enter an optional description for this graph here.',
+//    'required'              => 0,
+//    'widget_rows'             => 2,
+//    'widget_weight'           => 10,
+//    'default_display_label'   => 'hidden',
+//    'default_display_type'    => 'text_default',
+//    'default_display_weight'  => 10,
+//    'teaser_display_label'    => 'hidden',
+//    'teaser_display_type'     => 'text_default',
+//    'teaser_display_weight'   => 10,
+//  ));
+//
+//  $field_specs[] = _nemac_mailing_list_dimension_field(array(
+//    'field_name'            => 'field_nemac_mailing_list_width',
+//    'label'                 => 'Default Width',
+//    'description'           => 'The default width, in pixels, for this graph.  This width'
+//    .                            ' may be overridden any place where this graph is embedded.',
+//    'default_value'         => 500,
+//    'min_value'             => 1,
+//    'max_value'             => 2000,
+//    'widget_weight'         => 20,
+//    'default_display_weight'  => 20,
+//  ));
+//
+//  $field_specs[] = _nemac_mailing_list_dimension_field(array(
+//    'field_name'            => 'field_nemac_mailing_list_height',
+//    'label'                 => 'Default Height',
+//    'description'           => 'The default height, in pixels, for this graph.  This height'
+//    .                            ' may be overridden any place where this graph is embedded.',
+//    'default_value'         => 400,
+//    'min_value'             => 1,
+//    'max_value'             => 2000,
+//    'widget_weight'         => 30,
+//    'default_display_weight'  => 30,
+//  ));
+//
+//  $field_specs[] = _nemac_mailing_list_textarea_field_spec(array(
+//    'field_name'            => 'field_nemac_mailing_list_mugl',
+//    'label'                 => 'MUGL',
+//    'description'           => 'Enter the MUGL for this graph here.',
+//    'required'              => 1,
+//    'widget_rows'             => 10,
+//    'widget_weight'           => 40,
+//    'default_display_label'   => 'hidden',
+//    'default_display_type'    => 'hidden',
+//    'default_display_weight'  => 40,
+//    'teaser_display_label'    => 'hidden',
+//    'teaser_display_type'     => 'hidden',
+//    'teaser_display_weight'   => 40,
+//  ));
+//
+//  $field_specs[] = array(
+//    'field_config' => array(
+//      'active'                      => '1',
+//      'cardinality'         => '1',
+//      'deleted'             => '0',
+//      'entity_types'        => array(),
+//      'field_name'          => 'field_nemac_mailing_list_swf',
+//      'module'                      => 'list',
+//      'settings'            => array(
+//        'allowed_values_function' => '_nemac_mailing_list_available_swf_path_allowed_values',
+//      ),
+//      'translatable' => '0',
+//      'type' => 'list_text',
+//    ),
+//    'field_instance' => array(
+//      'bundle'                      => 'nemac_mailing_list',
+//      'default_value'               => NULL,
+//      'deleted'             => '0',
+//      'description'         => '',
+//      'display' => array(
+//        'default' => array(
+//          'label' => 'hidden',
+//          'module' => 'list',
+//          'settings' => array(),
+//          'type' => 'hidden',
+//          'weight' => 1,
+//        ),
+//        'teaser' => array(
+//          'label' => 'hidden',
+//          'settings' => array(),
+//          'type' => 'hidden',
+//          'weight' => 0,
+//        ),
+//      ),
+//      'entity_type'         => 'node',
+//      'field_name'          => 'field_nemac_mailing_list_swf',
+//      'label'                       => 'SWF',
+//      'description'         => 'Choose the SWF for this Nemac_Mailing_List',
+//      'required'            => 1,
+//      'settings'            => array(
+//        'user_register_form' => FALSE,
+//      ),
+//      'widget'                      => array(
+//        'active'   => 1,
+//        'module'   => 'options',
+//        'settings' => array(),
+//        'type'           => 'options_select',
+//        'weight'   => '60',
+//      ),
+//    ),
+//  );
+
+  return $field_specs;
+}
+
+
+// /*
+//  * Return a Field Spec array for an integer dimension field; this is used to define
+//  * the Nemac_Mailing_List's "width" and "height" fields.  This function takes a single array
+//  * argument having the following keys:
+//  *
+//  *    'field_name'          => 'field_nemac_mailing_list_description'
+//  *    'label'               => 'Description'
+//  *    'description'         => 'Enter an optional description for this graph here.',
+//  *    'required'            => 0
+//  *    'widget_rows'            => '2'
+//  *    'widget_weight'          => '-4'
+//  *    'default_display_label   => 'above'
+//  *    'default_display_weight  => '0'
+//  *    'teaser_display_label    => 'above'
+//  *    'teaser_display_weight   => '0'
+//  */
+// function _nemac_mailing_list_textarea_field_spec($field_spec_values) {
+// 
+//   return array(
+// 
+//     'field_config' => array(
+//       'field_name'   => $field_spec_values['field_name'],
+//       'type'         => 'text_long',
+//       'cardinality'  => '1',
+//       'active'       => '1',
+//       'module'       => 'text',
+//     ),
+// 
+//     'field_instance' => array(
+//       'field_name'  => $field_spec_values['field_name'],
+//       'label'       => $field_spec_values['label'],
+//       'description' => $field_spec_values['description'],
+//       'required'    => $field_spec_values['required'],
+//       'widget'      => array(
+//         'active'      => 1,
+//         'module'      => 'text',
+//         'settings'    => array(
+//           'rows'        => $field_spec_values['widget_rows'],
+//         ),
+//         'type'        => 'text_textarea',
+//         'weight'      => $field_spec_values['widget_weight'],
+//       ),
+//       'display' => array(
+//         'default' => array(
+//           'label'    => $field_spec_values['default_display_label'],
+//           'module'   => 'text',
+//           'settings' => array(),
+//           'type'     => $field_spec_values['default_display_type'],
+//           'weight'   => $field_spec_values['default_display_weight'],
+//         ),
+//         'teaser' => array(
+//           'label'    => $field_spec_values['teaser_display_label'],
+//           'settings' => array(),
+//           'type'     => $field_spec_values['teaser_display_type'],
+//           'weight'   => $field_spec_values['teaser_display_weight'],
+//         ),
+//       ),
+//       'settings' => array(
+//         'text_processing'    => '0',
+//         'user_register_form' => FALSE,
+//       ),
+//     ),
+// 
+//   );
+// 
+// }
+// 
+// function _nemac_mailing_list_text_field_spec($field_spec_values) {
+// 
+//   return array(
+// 
+//     'field_config' => array(
+//       'field_name'   => $field_spec_values['field_name'],
+//       'type'         => 'text',
+//       'cardinality'  => '1',
+//       'active'       => '1',
+//       'module'       => 'text',
+//     ),
+// 
+//     'field_instance' => array(
+//       'field_name'  => $field_spec_values['field_name'],
+//       'label'       => $field_spec_values['label'],
+//       'description' => $field_spec_values['description'],
+//       'required'    => $field_spec_values['required'],
+//       'widget'      => array(
+//         'active'      => 1,
+//         'module'      => 'text',
+//         'type'        => 'text',
+//         'weight'      => $field_spec_values['widget_weight'],
+//       ),
+//       'display' => array(
+//         'default' => array(
+//           'label'    => $field_spec_values['default_display_label'],
+//           'module'   => 'text',
+//           'type'     => $field_spec_values['default_display_type'],
+//           'weight'   => $field_spec_values['default_display_weight'],
+//         ),
+//         'teaser' => array(
+//           'label'    => $field_spec_values['teaser_display_label'],
+//           'type'     => $field_spec_values['teaser_display_type'],
+//           'weight'   => $field_spec_values['teaser_display_weight'],
+//         ),
+//       ),
+//       'settings' => array(
+//         'text_processing'    => '0',
+//         'user_register_form' => FALSE,
+//       ),
+//     ),
+// 
+//   );
+// 
+// }
+// 
+// 
+// 
+// /*
+//  * Return a Field Spec array for an integer dimension field; this is used to define
+//  * the Nemac_Mailing_List's "width" and "height" fields.  This function takes a single array
+//  * argument having the following keys:
+//  *
+//  *   'field_name'          => 'field_nemac_mailing_list_width'
+//  *   'label'               => 'Default Width'
+//  *   'description'         => 'The default width, in pixels, for this graph.  This width may be overridden any place where this graph is embedded.'
+//  *   'default_value'               => '400'
+//  *   'min_value'           => '1'
+//  *   'max_value'           => '2000'
+//  *   'widget_weight'               => '-2'
+//  *   'default_display_weight' => '2'
+//  */
+// function _nemac_mailing_list_dimension_field($field_spec_values) {
+// 
+// 
+//   return array(
+// 
+//     'field_config' => array(
+//       'field_name'   => $field_spec_values['field_name'],
+//       'type'         => 'number_integer',
+//       'cardinality'  => '1',
+//       'active'       => '1',
+//       'module'       => 'number',
+//     ),
+// 
+//     'field_instance' => array(
+//       'field_name' => $field_spec_values['field_name'],
+//       'label' => $field_spec_values['label'],
+//       'required' => 1,
+//       'description' => $field_spec_values['description'],
+//       'default_value' => array(0 => array('value' => $field_spec_values['default_value'])),
+//       'settings' => array(
+//         'max'    => $field_spec_values['max_value'],
+//      'min'    => $field_spec_values['min_value'],
+//         'prefix' => '',
+//         'suffix' => '',
+//         'user_register_form' => FALSE,
+//       ),
+//       'widget' => array(
+//         'active'   => 0,
+//         'module'   => 'number',
+//         'settings' => array(),
+//         'type'     => 'number',
+//         'weight'   => $field_spec_values['widget_weight'],
+//       ),
+// 
+// 
+//       'deleted' => '0',
+//       'display' => array(
+//         'default' => array(
+//           'label' => 'hidden',
+//           'module' => 'number',
+//           'settings' => array(
+//             'decimal_separator' => '.',
+//             'prefix_suffix' => TRUE,
+//             'scale' => 0,
+//             'thousand_separator' => ' ',
+//           ),
+//           'type' => 'hidden',
+//           'weight' => $field_spec_values['default_display_weight'],
+//         ),
+//         'teaser' => array(
+//           'label' => 'hidden',
+//           'settings' => array(),
+//           'type' => 'hidden',
+//           'weight' => 0,
+//         ),
+//       ),
+//     ),
+//   );
+// 
+// }
+// 
+
+/**
+ * Implements hook_uninstall().
+ */
+function nemac_mailing_list_uninstall() {
+  // Gather all the example content that might have been created while this
+  // module was enabled.
+  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+  $result = db_query($sql, array(':type' => 'nemac_mailing_list'));
+  $nids = array();
+  foreach ($result as $row) {
+    $nids[] = $row->nid;
+  }
+
+  // Delete all the nodes at once
+  node_delete_multiple($nids);
+
+  // Loop over each of the fields defined by this module and delete
+  // all instances of the field, their data, and the field itself.
+  //foreach (array_keys(_nemac_mailing_list_installed_fields()) as $field) {
+  foreach (_nemac_mailing_list_field_specs() as $field) {
+    field_delete_field($field['field_config']['field_name']);
+  }
+
+  // Loop over any remaining field instances attached to the nemac_mailing_list
+  // content type (such as the body field) and delete them individually.
+  $instances = field_info_instances('node', 'nemac_mailing_list');
+  foreach ($instances as $instance_name => $instance) {
+    field_delete_instance($instance);
+  }
+
+  // Delete our content type
+  node_type_delete('nemac_mailing_list');
+
+  // Purge all field information
+  field_purge_batch(1000);
+}

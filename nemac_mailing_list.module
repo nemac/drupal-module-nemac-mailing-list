@@ -1,0 +1,290 @@
+<?php
+
+/**
+ * Implements hook_node_info() to provide our nemac_mailing_list type.
+ */
+function nemac_mailing_list_node_info() {
+  return array(
+    'nemac_mailing_list' => array(
+      'name'        => t('NEMAC Mailing List'),
+      'base'        => 'nemac_mailing_list',
+      'description' => t('A mailing list in the @nemac.org domain'),
+      'has_title'   => TRUE,
+      'title_label' => t('List Address'),
+      'help'        => t('Enter the details for a NEMAC Mailing List here, bozo!'),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_permission().
+ */
+function nemac_mailing_list_permission() { 
+  return array(
+  'create NEMAC Mailing List' => array(
+    'title' => t('Create a NEMAC Mailing List'),
+    'description' => t('Create a NEMAC Mailing List'),
+  ),
+  'edit own NEMAC Mailing List' => array(
+    'title' => t('Edit own NEMAC Mailing List'),
+    'description' => t('Edit your own NEMAC Mailing List'),
+  ),
+  'edit any NEMAC Mailing List' => array(
+    'title' => t('Edit any NEMAC Mailing List'),
+    'description' => t('Edit any NEMAC Mailing List'),
+  ),
+  'delete own NEMAC Mailing List' => array(
+    'title' => t('Delete own NEMAC Mailing List'),
+    'description' => t('Delete own NEMAC Mailing List'),
+  ),
+  'delete any NEMAC Mailing List' => array(
+    'title' => t('Delete any NEMAC Mailing List'),
+    'description' => t('Delete any NEMAC Mailing List'),
+  ),
+ );
+}
+
+
+/**
+ * Implement hook_form() with the standard default form.
+ */
+function nemac_mailing_list_form($node, $form_state) {
+  $form = node_content_form($node, $form_state);
+  return $form;
+}
+
+
+
+
+// /**
+//  * Implements hook_node_info() to provide our multigraph type.
+//  */
+// function multigraph_node_info() {
+//   return array(
+//     'multigraph' => array(
+//       'name'        => t('Multigraph'),
+//       'base'        => 'multigraph',
+//       'description' => t('Use <i>multigraphs</i> to create interactive graph content with Multigraph.'),
+//       'has_title'   => TRUE,
+//       'title_label' => t('Title'),
+//       'help'        => t('Enter a title, description, width, height, and the MUGL (xml) for a Multigraph.'),
+//     ),
+//   );
+// }
+// 
+// function multigraph_menu() {
+//   $items['multigraph/mugl/%'] = array(
+//     'title'           => 'MUGL SERVICE URI',
+//     'type'            => MENU_CALLBACK,
+//     'page callback'   => '_multigraph_muglservice_controller',
+//     'page arguments'  => array(2),
+//     'access callback' => TRUE,
+//   );
+//   return $items;
+// }
+// 
+// 
+// function _multigraph_muglservice_controller($nid) {
+//   $node = node_load($nid);
+//   if (!$node || $node->type != 'multigraph') {
+//     $mugl = 'What?';
+//   } else {
+//     $mugl = $node->field_multigraph_mugl['und']['0']['value'];
+//   }
+// 
+//   header('Content-type: text/xml');
+//   print $mugl;
+//   exit();
+// }
+// 
+// /*
+// function _multigraph_string_ends_with($string, $suffix) {
+//   $suffix_len = strlen($suffix);
+//   $string_len = strlen($string);
+//   for ($i=1; $i<=$suffix_len; ++$i) {
+//     if ($string[$string_len-$i] != $suffix[$suffix_len-$i]) {
+//       return false;
+//     }
+//   }
+//   return true;
+// }
+// */
+// 
+// /**
+//  * Implement hook_form() with the standard default form.
+//  */
+// function multigraph_form($node, $form_state) {
+//   $form = node_content_form($node, $form_state);
+//   return $form;
+// }
+// 
+// 
+// function multigraph_form_alter(&$form, $form_state, $form_id) {
+//   if ($form_id == 'multigraph_node_form') {
+//     if ((count($form['field_multigraph_swf']['und']['#default_value']) <= 0)
+// 	||
+// 	(!in_array($form['field_multigraph_swf']['und']['#default_value']['0'],
+// 		   $form['field_multigraph_swf']['und']['#options']))) {
+//       $swf_paths = _multigraph_available_swf_paths('multigraph');
+//       if (count($swf_paths) <= 0) {
+// 	drupal_set_message("This site's multigraph package has not yet been set up with a copy of the Multigraph SWF file.  See the README.txt file in the multigraph package directory for instructions.", 'warning');
+//       } else {
+// 	$form['field_multigraph_swf']['und']['#default_value'] = $swf_paths[count($swf_paths)-1];
+//       }
+//     }
+//   }
+// }
+// 
+// 
+// 
+// /**
+//  * Implementation of hook_menu_alter().
+//  */
+// function multigraph_menu_alter(&$callbacks) {
+//   // If the user does not have 'administer nodes' permission,
+//   // disable the multigraph menu item by setting its access callback to FALSE.
+//   /*
+//     ?????????
+//     sometimes the following user_access() returns false, even for the admin user, even
+//     when the admin user DOES still have 'administer nodes' perm.  WHY WHY WHY???
+//     ?????????
+//   if (!user_access('administer nodes')) {
+//     $callbacks['node/add/multigraph']['access callback'] = FALSE;
+//     // Must unset access arguments or Drupal will use user_access()
+//     // as a default access callback.
+//     unset($callbacks['node/add/multigraph']['access arguments']);
+//   }
+//   */
+// }
+// 
+// /**
+//  * Implementation of hook_permission().
+//  */
+// function multigraph_permission() { 
+//   return array(
+//   'create multigraph' => array(
+//     'title' => t('Create a multigraph'),
+//     'description' => t('Create a multigraph'),
+//   ),
+//   'edit own multigraph' => array(
+//     'title' => t('Edit own multigraph'),
+//     'description' => t('Edit your own multigraph'),
+//   ),
+//   'edit any multigraph' => array(
+//     'title' => t('Edit any multigraph'),
+//     'description' => t('Edit any multigraph'),
+//   ),
+//   'delete own multigraph' => array(
+//     'title' => t('Delete own multigraph'),
+//     'description' => t('Delete own multigraph'),
+//   ),
+//   'delete any multigraph' => array(
+//     'title' => t('Delete any multigraph'),
+//     'description' => t('Delete any multigraph'),
+//   ),
+//  );
+// }
+// 
+// 
+// /**
+//  * Implementation of hook_validate().
+//  */
+// /*
+// function multigraph_validate($node) {
+//   // Enforce a minimum character count of 2 on company names.
+// //  if (isset($node->multigraph_company) && strlen($node->multigraph_company['und'][0]['value']) < 2) {
+// //    form_set_error('multigraph_company', t('The company name line of your multigraph is too short. You need at least 2 characters.'), $limit_validation_errors = NULL);
+// //  }
+// }
+// */
+// 
+// 
+// /**
+//  * Implementation of hook_insert().
+//  */
+// /*
+// function multigraph_insert($node) {
+// // log details of the multigraphing to watchdog  
+// //  watchdog('multigraph', 'A new multigraph titled: '.$node->title.' for company: '.$node->multigraph_company['und'][0]['value'].' was added by UID: '.$node->uid, $variables = array(), WATCHDOG_NOTICE, $link = 'node/'.$node->nid);  
+// }
+// */
+// 
+// /**
+//  * Implementation of hook_update().
+//  */
+// /*
+//  function multigraph_update($node) { 
+// // log details of the multigraphing to watchdog  
+// //  watchdog('multigraph', 'A multigraph titled: '.$node->title.' for company: '.$node->multigraph_company['und'][0]['value'].' was updated by UID: '.$node->uid, $variables = array(), WATCHDOG_NOTICE, $link = 'node/'.$node->nid);
+//  }
+// */
+//  
+// /**
+//  * Implementation of hook_delete().
+//  */
+// /*
+//  function multigraph_delete($node) { 
+// // log details of the multigraphing to watchdog  
+// //  watchdog('multigraph', 'A multigraph titled: '.$node->title.' for company: '.$node->multigraph_company['und'][0]['value'].' was deleted by UID: '.$node->uid, $variables = array(), WATCHDOG_NOTICE, $link = 'node/'.$node->nid);
+//  } 
+// */
+//  
+// /**
+//  * Implementation of hook_load().
+//  */
+// /*
+// function multigraph_load($nodes) { 
+// // Add a new element to the node at load time for storing the multigraphing sponsor information
+// //  foreach ($nodes as $node) {
+// //     $node->sponsor = "ACME Career Services, Your Source for Drupal Jobs";
+// //  }  
+// //  return $node;
+// } 
+// */
+//  
+// /**
+//  * Implement hook_view().
+//  */
+// function multigraph_view($node, $view_mode) { 
+//   if ($view_mode == 'full') {
+//     $width  = $node->field_multigraph_width['und']['0']['value'];
+//     $height = $node->field_multigraph_height['und']['0']['value'];
+//     $swf    = $node->field_multigraph_swf['und']['0']['value'];
+//     $node->content['graph'] = array(
+//       '#markup' => theme('graph',
+//          array('nid'    => $node->nid,
+//                'mugl'   => $node->field_multigraph_mugl['und']['0']['value'],
+//                'width'  => $node->field_multigraph_width['und']['0']['value'],
+//                'height' => $node->field_multigraph_height['und']['0']['value'],
+//                'swf'    => $node->field_multigraph_swf['und']['0']['value'],
+//                'flashcode' => _multigraph_object_embed_string($width,$height,
+//                                                               base_path()
+//                                                               . "multigraph/mugl/" . $node->nid,
+//                                                               base_path()
+//                                                               . drupal_get_path('module', 'multigraph')
+//                                                               . "/multigraph/"
+//                                                               . $swf))
+//                          ),
+//       '#weight' => 0,
+//     );
+//     unset($node->field_multigraph_mugl);
+//   }
+//   return $node; 
+// }
+// 
+//  
+// /**
+//  * Implementation of hook_theme().
+//  */
+// function multigraph_theme() {
+//   return array(
+//     'graph' => array('variables' => array('nid'    => NULL,
+// 					  'mugl'   => NULL,
+// 					  'width'  => NULL,
+// 					  'height' => NULL,
+// 					  'swf'    => NULL,
+// 					  'flashcode'    => NULL),
+// 		     'template'  => 'graph',
+//     ),
+//   );
+// }

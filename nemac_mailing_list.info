@@ -1,0 +1,14 @@
+name = NEMAC Mailing List
+description = Defines a content type for managing @nemac.org mailing lists.
+package = NEMAC
+core = 7.x
+version = "7.x-1.0-alpha1"
+files[] = nemac_mailing_list.install
+files[] = neamc_mailing_list.module
+dependencies[] = "ctools"
+dependencies[] = "entityreference"
+dependencies[] = "field_sql_storage"
+dependencies[] = "node"
+dependencies[] = "options"
+dependencies[] = "role_field"
+dependencies[] = "text"
