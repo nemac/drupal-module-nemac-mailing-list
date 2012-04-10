@@ -53,7 +53,7 @@ function _nemac_mailing_list_field_specs() {
       'bundle'        => 'nemac_mailing_list',
       'default_value' => NULL,
       'deleted'       => '0',
-      'description'   => 'Check any roles that should be included in this mailing list.  Checking a role will cause all users in that role to belong to the list.',
+      'description'   => 'Check any roles that should be included in this mailing list.  Checking a role will cause all users with that role to be included on this mailing list, including users added to that role in the future.',
       'display'       => array(
         'default'       => array(
           'label'       => 'above',
@@ -128,7 +128,7 @@ function _nemac_mailing_list_field_specs() {
       'bundle'            => 'nemac_mailing_list',
       'default_value'     => NULL,
       'deleted'           => '0',
-      'description'       => 'Enter any individual user who should belong to this list, regardless of whatever roles are checked above.',
+      'description'       => 'If you want to include specific users on this mailing list, in addition to any users in selected roles above, specify them here.',
       'display'           => array(
         'default'           => array(
           'label'             => 'above',
@@ -148,7 +148,7 @@ function _nemac_mailing_list_field_specs() {
       ),
       'entity_type'         => 'node',
       'field_name'          => 'field_nemac_mailing_list_users',
-      'label'               => 'Users',
+      'label'               => 'Additional Users',
       'required'            => 0,
       'settings'            => array(
         'user_register_form'  => FALSE,
@@ -196,7 +196,7 @@ function _nemac_mailing_list_field_specs() {
       'bundle'         => 'nemac_mailing_list',
       'default_value'  => NULL,
       'deleted'        => '0',
-      'description'    => 'Enter additional email addresses for this mailing list here.  Enter one email address per line.  These should be email addresses, not Drupal user accounts.',
+      'description'    => 'If you want to include additional email addresses on this mailing list, that do not correspond to addresses of users on this Drupal site, enter them here, one per line.  These should be valid email addresses, not Drupal user accounts.',
       'display'        => array(
         'default'        => array(
           'label'          => 'above',

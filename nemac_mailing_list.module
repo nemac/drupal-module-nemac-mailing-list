@@ -64,33 +64,68 @@ function nemac_mailing_list_addresses($node) {
   // load addresses of users in the selected roles
   //   assemble the rids of the selected roles into $rids array:
   $rids = array();
-  foreach ($node->field_nemac_mailing_list_roles['und'] as $ridarray) {
-    $rids[] = $ridarray['value'];
-  }
-  //   load the addresses of any users in those roles into the $addrs array:
-  $result2 = db_select('users_roles', 'ur')
-    ->fields('ur', array('uid'))
-    ->condition('rid', $rids, 'in')
-    ->execute();
-  while ($record2 = $result2->fetchAssoc()) {
-    $user = user_load($record2['uid']);
-    $addrs[] = $user->mail;
+  if ($node->field_nemac_mailing_list_roles) {
+    foreach ($node->field_nemac_mailing_list_roles['und'] as $ridarray) {
+      $rids[] = $ridarray['value'];
+    }
+    //   load the addresses of any users in those roles into the $addrs array:
+    $result2 = db_select('users_roles', 'ur')
+      ->fields('ur', array('uid'))
+      ->condition('rid', $rids, 'in')
+      ->execute();
+    while ($record2 = $result2->fetchAssoc()) {
+      $user = user_load($record2['uid']);
+      $addrs[] = $user->mail;
+    }
   }
 
   // load addresses of specifically listed users:
-  foreach ($node->field_nemac_mailing_list_users['und'] as $uid) {
-    $user = user_load($uid['target_id']);
-    $addrs[] = $user->mail;
+  if ($node->field_nemac_mailing_list_users) {
+    foreach ($node->field_nemac_mailing_list_users['und'] as $uid) {
+      $user = user_load($uid['target_id']);
+      $addrs[] = $user->mail;
+    }
   }
 
   // load specifically listed addresses:
-  foreach (preg_split('/[\s,]+/', $node->field_nemac_mailing_list_addrs['und']['0']['value'])
-	   as $addr) {
-    $addrs[] = $addr;
+  if ($node->field_nemac_mailing_list_addrs) {
+    foreach (preg_split('/[\s,]+/', $node->field_nemac_mailing_list_addrs['und']['0']['value'])
+	     as $addr) {
+      $addrs[] = $addr;
+    }
   }
 
   return $addrs;
 }
+
+
+/**
+ * Implement hook_view().
+ */
+function nemac_mailing_list_view($node, $view_mode) { 
+  if ($view_mode == 'full') {
+    $addresses  = nemac_mailing_list_addresses($node);
+    $node->content['addresses'] = array(
+      '#markup' => theme('nemac_mailing_list_addresses',
+			 array('addresses' => $addresses)),
+      '#weight' => 10,
+    );
+  }
+  return $node; 
+}
+
+ 
+/**
+ * Implementation of hook_theme().
+ */
+function nemac_mailing_list_theme() {
+  return array(
+    'nemac_mailing_list_addresses' => array('variables' => array('addresses' => NULL),
+					    'template'  => 'nemac_mailing_list_addresses'),
+					    
+	       );
+}
+
 
 // /**
 //  * Implements hook_node_info() to provide our multigraph type.
