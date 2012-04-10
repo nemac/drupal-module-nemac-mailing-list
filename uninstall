@@ -1,0 +1,3 @@
+#! /bin/bash
+
+drush dis -y nemac_mailing_list ; drush pm-uninstall -y nemac_mailing_list
