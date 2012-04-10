@@ -92,7 +92,7 @@ function _nemac_mailing_list_field_specs() {
       'cardinality'       => '-1',
       'deleted'           => '0',
       'entity_types'      => array(),
-      'field_name'        => 'nemac_mailing_list_users',
+      'field_name'        => 'field_nemac_mailing_list_users',
       'foreign keys'      => array(
         'node'            => array(
           'columns'       => array(
@@ -147,7 +147,7 @@ function _nemac_mailing_list_field_specs() {
         ),
       ),
       'entity_type'         => 'node',
-      'field_name'          => 'nemac_mailing_list_users',
+      'field_name'          => 'field_nemac_mailing_list_users',
       'label'               => 'Users',
       'required'            => 0,
       'settings'            => array(
@@ -173,7 +173,7 @@ function _nemac_mailing_list_field_specs() {
       'cardinality'  => '1',
       'deleted'      => '0',
       'entity_types' => array(),
-      'field_name'   => 'nemac_mailing_list_addresses',
+      'field_name'   => 'field_nemac_mailing_list_addrs',
       'foreign keys' => array(
         'format'       => array(
           'columns'      => array(
@@ -213,7 +213,7 @@ function _nemac_mailing_list_field_specs() {
         ),
       ),
       'entity_type'      => 'node',
-      'field_name'       => 'nemac_mailing_list_addresses',
+      'field_name'       => 'field_nemac_mailing_list_addrs',
       'label'            => 'Additional Addresses',
       'required'         => 0,
       'settings'         => array(
