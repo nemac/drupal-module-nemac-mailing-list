@@ -1,0 +1,19 @@
+#! /usr/bin/python
+
+from NEMACMailingList import *
+from GAppsCredentials import *
+
+#gapps_manager  = GappsMailingListManager(GAPPS_USER, GAPPS_DOMAIN, GAPPS_PASSWORD)
+drupal_manager = DrupalMailingListManager()
+
+mailinglists = drupal_manager.get_lists()
+
+for mailinglist in mailinglists:
+  print "%s:" % mailinglist
+  for address in drupal_manager.get_list_members(mailinglist):
+    print "  %s" % address
+
+#for mailinglist in mailinglists:
+#  gapps_manager.sync_list(mailinglist+'@nemac.org',
+#                          drupal_manager.get_list_members(mailinglist))
+
