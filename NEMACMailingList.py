@@ -3,6 +3,8 @@ import subprocess
 import gdata.apps.service
 import gdata.apps.groups.service
 
+DRYRUN = True
+
 def array_to_dict(array):
   d = {}
   for a in array:
@@ -22,6 +24,12 @@ class GappsMailingListManager(MailingListManger):
     self.groupsService = gdata.apps.groups.service.GroupsService(email=self.user, domain=self.domain, password=self.password)
     self.groupsService.ProgrammaticLogin()
 
+  def list_address(self, list):
+    if re.search(r'@[^@]+.[^@]+', list):
+      return list
+    else:
+      return list + "@" + self.domain
+
   def get_lists(self):
     groups = self.groupsService.RetrieveAllGroups()
     return sorted([group['groupId'] for group in groups])
@@ -32,14 +40,27 @@ class GappsMailingListManager(MailingListManger):
 
   def add_member_to_list(self,member,group):
     print "    +  %s" % (member)
-    self.groupsService.AddMemberToGroup(member, group)
+    if not DRYRUN:
+      self.groupsService.AddMemberToGroup(member, group)
 
   def remove_member_from_list(self,member,group):
     print "    -  %s" % (member)
-    self.groupsService.RemoveMemberFromGroup(member, group)
+    if not DRYRUN:
+      self.groupsService.RemoveMemberFromGroup(member, group)
+
+  def list_exists(self, list):
+    return self.list_address(list) in self.get_lists()
+
+  def create_list(self, list):
+    if not self.list_exists(list):
+      print 'create list: ' + list
+      if not DRYRUN:
+        self.groupsService.CreateGroup(list, list, 'group created by nemac_mailing_list Drupal module', 'Anyone')
 
   def sync_list(self, group, new_members):
     print "%s:" % group
+    if not self.list_exists(group):
+      self.create_list(group)
     existing_members = self.get_list_members(group)
     existing_member_dict = array_to_dict(existing_members)
     new_member_dict      = array_to_dict(new_members)
@@ -59,7 +80,7 @@ class DrupalMailingListManager(MailingListManger):
     for line in output.split('\n'):
       match = re.search(r'^([a-zA-Z0-9_-]+@[a-zA-Z0-9_\.-]+):(.*)$', line)
       if match:
-        listaddress   = match.group(1)
+        listaddress   = re.sub(r'@.*$', '', match.group(1)) # remove the '@nemac.org' from the end of the address
         listaddresses = match.group(2).split(',')
         mailinglists[listaddress] = listaddresses
     return mailinglists
