@@ -11,7 +11,8 @@ function nemac_mailing_list_node_info() {
       'description' => t('A mailing list in the @nemac.org domain'),
       'has_title'   => TRUE,
       'title_label' => t('List Address'),
-      'help'        => t('Enter the details for a NEMAC Mailing List here, bozo!'),
+      'title_description' => t('List Address Goes Here'),
+      //'help'        => t('Enter the details for a NEMAC Mailing List here, bozo!'),
     ),
   );
 }

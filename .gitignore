@@ -2,3 +2,5 @@ GAppsCredentials.py
 *.pyc
 *~
 #*#
+sync_gapps_mailinglists_cron
+sync_gapps_mailinglists_cron.log
