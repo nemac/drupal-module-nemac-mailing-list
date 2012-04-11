@@ -1,2 +1,4 @@
 GAppsCredentials.py
 *.pyc
+*~
+#*#
