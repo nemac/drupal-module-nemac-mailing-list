@@ -61,18 +61,26 @@ function nemac_mailing_list_addresses($node) {
   // initialize array to store list addresses
   $addrs = array();
 
-  // load addresses of users in the selected roles
+  // load addresses of (active) users in the selected roles
   //   assemble the rids of the selected roles into $rids array:
   $rids = array();
+  $include_all_authenticated_users = False;
   if ($node->field_nemac_mailing_list_roles) {
     foreach ($node->field_nemac_mailing_list_roles['und'] as $ridarray) {
-      $rids[] = $ridarray['value'];
+      $rid = $ridarray['value'];
+      $role = user_role_load($rid);
+      if ($role->name == 'authenticated user') {
+	$include_all_authenticated_users = True;
+      }
+      $rids[] = $rid;
     }
-    //   load the addresses of any users in those roles into the $addrs array:
-    $result2 = db_select('users_roles', 'ur')
-      ->fields('ur', array('uid'))
-      ->condition('rid', $rids, 'in')
-      ->execute();
+    //   load the addresses of any (active) users in those roles into the $addrs array:
+    $query = db_select('users_roles', 'ur')
+      ->fields('ur', array('uid'));
+    if (!$include_all_authenticated_users) {
+      $query = $query->condition('rid', $rids, 'in');
+    }
+    $result2 = $query->execute();
     while ($record2 = $result2->fetchAssoc()) {
       $user = user_load($record2['uid']);
       $addrs[] = $user->mail;
@@ -91,7 +99,9 @@ function nemac_mailing_list_addresses($node) {
   if ($node->field_nemac_mailing_list_addrs) {
     foreach (preg_split('/[\s,]+/', $node->field_nemac_mailing_list_addrs['und']['0']['value'])
 	     as $addr) {
-      $addrs[] = $addr;
+      if ($addr) {
+	$addrs[] = $addr;
+      }
     }
   }
 

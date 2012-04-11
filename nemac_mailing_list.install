@@ -7,7 +7,6 @@ function nemac_mailing_list_install() {
   node_types_rebuild();
 
   foreach (_nemac_mailing_list_field_specs() as $field_spec) {
-error_log('creating field');
     field_create_field($field_spec['field_config']);
     $instance                = $field_spec['field_instance'];
     $instance['entity_type'] = 'node';
@@ -28,6 +27,16 @@ error_log('creating field');
  */
 function _nemac_mailing_list_field_specs() {
 
+  $result = db_select('role', 'r')
+    ->fields('r', array('rid'))
+    ->condition('name', array('anonymous user'), 'in')
+    ->execute();
+  $rids_to_exclude = array();
+  while ($record = $result->fetchAssoc()) {
+    $rids_to_exclude[] = $record['rid'];
+  }
+
+
   $field_specs = array();
 
   $field_specs[] = array(
@@ -42,9 +51,7 @@ function _nemac_mailing_list_field_specs() {
       'module'        => 'role_field',
       'settings'      => array(
         'exclusive'     => 1,
-        'roles'         => array(
-            //3             => '3',
-        ),
+        'roles'         => $rids_to_exclude,
       ),
       'translatable'  => '0',
       'type'          => 'role',

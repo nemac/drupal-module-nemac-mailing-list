@@ -3,7 +3,7 @@ import subprocess
 import gdata.apps.service
 import gdata.apps.groups.service
 
-DRYRUN = True
+DRYRUN = False
 
 def array_to_dict(array):
   d = {}
@@ -23,12 +23,16 @@ class GappsMailingListManager(MailingListManger):
     self.password = password
     self.groupsService = gdata.apps.groups.service.GroupsService(email=self.user, domain=self.domain, password=self.password)
     self.groupsService.ProgrammaticLogin()
+    self.managed_group_description = 'Group managed by nemac_mailing_list Drupal module; do not edit manually.'
 
   def list_address(self, list):
     if re.search(r'@[^@]+.[^@]+', list):
       return list
     else:
       return list + "@" + self.domain
+
+  def list_name(self, listaddress):
+    return re.sub(r'@.*$', '', listaddress)
 
   def get_lists(self):
     groups = self.groupsService.RetrieveAllGroups()
@@ -55,12 +59,20 @@ class GappsMailingListManager(MailingListManger):
     if not self.list_exists(list):
       print 'create list: ' + list
       if not DRYRUN:
-        self.groupsService.CreateGroup(list, list, 'group created by nemac_mailing_list Drupal module', 'Anyone')
+        print "self.groupsService.CreateGroup(%s, %s, %s, %s)" % (list, self.list_name(list), self.managed_group_description, 'Anyone')
+        self.groupsService.CreateGroup(list, self.list_name(list), self.managed_group_description, 'Anyone')
+
+  def update_list_description(self, list):
+    if not DRYRUN:
+      print "self.groupsService.UpdateGroup(%s, %s, %s, %s)" % (list, self.list_name(list), self.managed_group_description, 'Anyone')
+      self.groupsService.UpdateGroup(list, self.list_name(list), self.managed_group_description, 'Anyone')
 
   def sync_list(self, group, new_members):
     print "%s:" % group
     if not self.list_exists(group):
       self.create_list(group)
+    else:
+      self.update_list_description(group)
     existing_members = self.get_list_members(group)
     existing_member_dict = array_to_dict(existing_members)
     new_member_dict      = array_to_dict(new_members)
