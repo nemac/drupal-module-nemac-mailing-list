@@ -32,7 +32,7 @@ class GappsMailingListManager(MailingListManger):
       return list + "@" + self.domain
 
   def list_name(self, listaddress):
-    return re.sub(r'@.*$', '', listaddress)
+    return 'DRUPAL-' + re.sub(r'@.*$', '', listaddress)
 
   def get_lists(self):
     groups = self.groupsService.RetrieveAllGroups()
@@ -59,12 +59,10 @@ class GappsMailingListManager(MailingListManger):
     if not self.list_exists(list):
       print 'create list: ' + list
       if not DRYRUN:
-        print "self.groupsService.CreateGroup(%s, %s, %s, %s)" % (list, self.list_name(list), self.managed_group_description, 'Anyone')
         self.groupsService.CreateGroup(list, self.list_name(list), self.managed_group_description, 'Anyone')
 
   def update_list_description(self, list):
     if not DRYRUN:
-      print "self.groupsService.UpdateGroup(%s, %s, %s, %s)" % (list, self.list_name(list), self.managed_group_description, 'Anyone')
       self.groupsService.UpdateGroup(list, self.list_name(list), self.managed_group_description, 'Anyone')
 
   def sync_list(self, group, new_members):
@@ -87,7 +85,8 @@ class GappsMailingListManager(MailingListManger):
 class DrupalMailingListManager(MailingListManger):
 
   def get_mcrn_mailinglists_from_drupal(self):
-    output = subprocess.check_output(["drush", "scr", "getaddrs.php"])
+    #output = subprocess.check_output(["drush", "scr", "getaddrs.php"])
+    output = subprocess.Popen(["drush", "scr", "getaddrs.php"], stdout=subprocess.PIPE).communicate()[0]
     mailinglists = {}
     for line in output.split('\n'):
       match = re.search(r'^([a-zA-Z0-9_-]+@[a-zA-Z0-9_\.-]+):(.*)$', line)
