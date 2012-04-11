@@ -83,7 +83,9 @@ function nemac_mailing_list_addresses($node) {
     $result2 = $query->execute();
     while ($record2 = $result2->fetchAssoc()) {
       $user = user_load($record2['uid']);
-      $addrs[] = $user->mail;
+      if ($user->status > 0) {
+	$addrs[] = $user->mail;
+      }
     }
   }
 
