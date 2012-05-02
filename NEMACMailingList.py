@@ -85,8 +85,8 @@ class GappsMailingListManager(MailingListManger):
 class DrupalMailingListManager(MailingListManger):
 
   def get_mcrn_mailinglists_from_drupal(self):
-    #output = subprocess.check_output(["drush", "scr", "getaddrs.php"])
-    output = subprocess.Popen(["drush", "scr", "getaddrs.php"], stdout=subprocess.PIPE).communicate()[0]
+    #output = subprocess.check_output(["/usr/local/bin/drush", "scr", "getaddrs.php"])
+    output = subprocess.Popen(["/usr/local/bin/drush", "scr", "getaddrs.php"], stdout=subprocess.PIPE).communicate()[0]
     mailinglists = {}
     for line in output.split('\n'):
       match = re.search(r'^([a-zA-Z0-9_-]+@[a-zA-Z0-9_\.-]+):(.*)$', line)
