@@ -12,7 +12,7 @@ function nemac_mailing_list_node_info() {
       'has_title'   => TRUE,
       'title_label' => t('List Address'),
       'title_description' => t('List Address Goes Here'),
-      //'help'        => t('Enter the details for a NEMAC Mailing List here, bozo!'),
+      'help'        => t('Enter the details for a NEMAC mailing list here.  For the list address, enter the entire address, complete with domain, e.g. "example@nemac.org".'),
     ),
   );
 }
